@@ -3,8 +3,12 @@
 
 ## Wireless Thermal Camera
 * Team: Alexa Ramachandran and Shreya Ravi
-* Description
+
+### Description
+
 The Wireless Thermal Camera is a handheld device that sends thermal data to a monitor that then renders an image to the user. Thermal data is collected using an infrared sensing camera and communicated to the monitor using a WiFi chip. The monitor then reads the thermal data and creates a visual representation of the thermal data for the user. This rendering can then be extended to track areas of high thermal activity.
+
+### Further Details
 * Hardware required
   * IR Camera -- Sparkfun Qwiic IR Array MLX90640
   * Qwiic Cable Breadboard Jumper
