@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _MLX640_API_H_
-#define _MLX640_API_H_
+#ifndef _MLX90640_API_H_
+#define _MLX90640_API_H_
+
+#include <stdint.h>
     
   typedef struct
     {

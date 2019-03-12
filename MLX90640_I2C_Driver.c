@@ -19,7 +19,7 @@
 #include "MLX90640_I2C_Driver.h"
 #include "i2c.h"
 
-void MLX90640_I2CInit()
+void MLX90640_I2CInit(void)
 {
   i2c_init();
 }

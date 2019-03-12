@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 
+#if 0
 //Define the size of the I2C buffer based on the platform the user has
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
@@ -42,7 +43,7 @@
 
 #endif
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
+#endif
 
 void MLX90640_I2CInit(void);
 int MLX90640_I2CRead(uint8_t slaveAddr, unsigned int startAddress, unsigned int nWordsRead, uint16_t *data);
