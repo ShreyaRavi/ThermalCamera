@@ -16,13 +16,12 @@
 */
 
 
-#include <Wire.h>
-
 #include "MLX90640_I2C_Driver.h"
+#include "i2c.h"
 
 void MLX90640_I2CInit()
 {
-
+  i2c_init();
 }
 
 //Read a number of words from startAddress. Store into Data array.
@@ -30,6 +29,21 @@ void MLX90640_I2CInit()
 int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned int nWordsRead, uint16_t *data)
 {
 
+
+ // ------------------- CUSTOM I2C CODE START --------------------------
+  char* write_start_addr[2];
+  write_start_addr[0] = startAddress >> 8;
+  write_start_addr[1] = startAddress & 0xFF;
+  i2c_write(_deviceAddress, write_start_addr, 2);
+  // delay needed between i2c read/write?
+  i2c_read(_deviceAddress, (char*) data, nWordsRead * 2); // is this enough -- data comes MSB first
+
+  return 0;
+
+
+// ------------------- CUSTOM I2C CODE END --------------------------
+
+#if 0
   //Caller passes number of 'unsigned ints to read', increase this to 'bytes to read'
   uint16_t bytesRemaining = nWordsRead * 2;
 
@@ -71,19 +85,49 @@ int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned
   }
 
   return (0); //Success
+#endif
 }
 
 //Set I2C Freq, in kHz
 //MLX90640_I2CFreqSet(1000) sets frequency to 1MHz
 void MLX90640_I2CFreqSet(int freq)
 {
+
+  // no idea -- don't use?
+
+  #if 0
   //i2c.frequency(1000 * freq);
   Wire.setClock((long)1000 * freq);
+  #endif
 }
 
 //Write two bytes to a two byte address
 int MLX90640_I2CWrite(uint8_t _deviceAddress, unsigned int writeAddress, uint16_t data)
 {
+
+// ------------------- CUSTOM I2C CODE START --------------------------
+  char* write_data[4];
+  write_data[0] = writeAddress >> 8;
+  write_data[1] = writeAddress & 0xFF;
+  write_data[2] = data >> 8;
+  write_data[3] = data & 0xFF;
+
+  i2c_write(_deviceAddress, write_data, 4);
+
+  uint16_t dataCheck;
+  MLX90640_I2CRead(_deviceAddress, writeAddress, 1, &dataCheck);
+  if (dataCheck != data)
+  {
+    //Serial.println("The write request didn't stick");
+    return -2;
+  }
+
+  return 0;
+
+  // ------------------- CUSTOM I2C CODE END --------------------------
+
+#if 0
+
   Wire.beginTransmission((uint8_t)_deviceAddress);
   Wire.write(writeAddress >> 8); //MSB
   Wire.write(writeAddress & 0xFF); //LSB
@@ -105,5 +149,6 @@ int MLX90640_I2CWrite(uint8_t _deviceAddress, unsigned int writeAddress, uint16_
   }
 
   return (0); //Success
+#endif
 }
 
