@@ -31,7 +31,7 @@ int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned
 
 
  // ------------------- CUSTOM I2C CODE START --------------------------
-  char* write_start_addr[2];
+  char write_start_addr[2];
   write_start_addr[0] = startAddress >> 8;
   write_start_addr[1] = startAddress & 0xFF;
   i2c_write(_deviceAddress, write_start_addr, 2);
@@ -106,7 +106,7 @@ int MLX90640_I2CWrite(uint8_t _deviceAddress, unsigned int writeAddress, uint16_
 {
 
 // ------------------- CUSTOM I2C CODE START --------------------------
-  char* write_data[4];
+  char write_data[4];
   write_data[0] = writeAddress >> 8;
   write_data[1] = writeAddress & 0xFF;
   write_data[2] = data >> 8;

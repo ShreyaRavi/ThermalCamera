@@ -1,12 +1,12 @@
 NAME = main
 OBJECTS =
-MY_MODULES =
+MY_MODULES = MLX90640_API.o MLX90640_I2C_Driver.o
 
 CFLAGS  = -I$(CS107E)/include -g -Wall -Wpointer-arith
 CFLAGS += -Og -std=c99 -ffreestanding
 CFLAGS += -mapcs-frame -fno-omit-frame-pointer -mpoke-function-name
 LDFLAGS = -nostdlib -T memmap -L. -L$(CS107E)/lib
-LDLIBS  = -lmypi -lpi -lgcc
+LDLIBS  = -lpi -lm -lgcc -lc
 
 all : $(NAME).bin $(MY_MODULES)
 
