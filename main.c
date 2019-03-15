@@ -15,10 +15,12 @@ paramsMLX90640 mlx90640;
 
 void main(void) 
 {
-    
+    MLX90640_I2CFreqSet(1000);
     uart_init();
     MLX90640_I2CInit();
-    MLX90640_I2CFreqSet(1000); 
+     
+
+    timer_delay_us(80000);
 
     int status;
     //Get device parameters - We only have to do this once
@@ -34,7 +36,7 @@ void main(void)
         printf("Parameter extraction failed, status: %d\n", status);
     }
 
-    MLX90640_SetRefreshRate(MLX90640_address, 0x04); // 8 Hz -- 4 fps (Highest I can go i think) 
+    MLX90640_SetRefreshRate(MLX90640_address, 0x06); // 32 Hz -- 16 fps (Highest I can go i think) 
 
     while (1) {
         for (char x = 0; x < 2; x++) //Read both subpages
@@ -64,7 +66,7 @@ void main(void)
             
         }
 
-        //timer_delay_us(100);
+        //timer_delay_us(20);
 	}
 
 	//Once params are extracted, we can release eeMLX90640 array
