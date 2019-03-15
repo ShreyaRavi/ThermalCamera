@@ -13,11 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+   Modified March 2019 by Shreya Ravi and Alexa Ramachandran (sravi2@stanford.edu, arama@stanford.edu), Stanford University, CS 107E 
+   - Added support for Raspberry Pi baremetal I2C communication using I07E I2C library
 */
 
 
 #include "MLX90640_I2C_Driver.h"
 #include "i2c.h"
+#include "timer.h"
 
 void MLX90640_I2CInit(void)
 {
@@ -28,22 +31,8 @@ void MLX90640_I2CInit(void)
 //Returns 0 if successful, -1 if error
 int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned int nWordsRead, uint16_t *data)
 {
-
-
- // ------------------- CUSTOM I2C CODE START --------------------------
   char write_start_addr[2];
-  write_start_addr[0] = startAddress >> 8;
-  write_start_addr[1] = startAddress & 0xFF;
-  i2c_write(_deviceAddress, write_start_addr, 2);
-  // delay needed between i2c read/write?
-  i2c_read(_deviceAddress, (char*) data, nWordsRead * 2); // is this enough -- data comes MSB first
 
-  return 0;
-
-
-// ------------------- CUSTOM I2C CODE END --------------------------
-
-#if 0
   //Caller passes number of 'unsigned ints to read', increase this to 'bytes to read'
   uint16_t bytesRemaining = nWordsRead * 2;
 
@@ -54,58 +43,46 @@ int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned
   //Setup a series of chunked I2C_BUFFER_LENGTH byte reads
   while (bytesRemaining > 0)
   {
-    Wire.beginTransmission(_deviceAddress);
-    Wire.write(startAddress >> 8); //MSB
-    Wire.write(startAddress & 0xFF); //LSB
-    if (Wire.endTransmission(false) != 0) //Do not release bus
-    {
-      Serial.println("No ack read");
-      return (0); //Sensor did not ACK
-    }
-
+    write_start_addr[0] = startAddress >> 8;
+    write_start_addr[1] = startAddress & 0xFF;
+    i2c_write(_deviceAddress, write_start_addr, 2);
+    
     uint16_t numberOfBytesToRead = bytesRemaining;
-    if (numberOfBytesToRead > I2C_BUFFER_LENGTH) numberOfBytesToRead = I2C_BUFFER_LENGTH;
-
-    Wire.requestFrom((uint8_t)_deviceAddress, numberOfBytesToRead);
-    if (Wire.available())
-    {
-      for (uint16_t x = 0 ; x < numberOfBytesToRead / 2; x++)
-      {
-        //Store data into array
-        data[dataSpot] = Wire.read() << 8; //MSB
-        data[dataSpot] |= Wire.read(); //LSB
-
-        dataSpot++;
-      }
+    if (numberOfBytesToRead > I2C_BUFFER_LENGTH) {
+      numberOfBytesToRead = I2C_BUFFER_LENGTH;
     }
+
+    i2c_read(_deviceAddress, &(((char*) data)[dataSpot]), numberOfBytesToRead);
+
+    for (uint16_t x = 0; x < numberOfBytesToRead; x += 2) {
+      char temp = ((char *) data)[dataSpot + x];
+      ((char *) data)[dataSpot + x] = ((char *) data)[dataSpot + x + 1];
+      ((char *) data)[dataSpot + x + 1] = temp;
+    }
+
+    dataSpot += numberOfBytesToRead;
 
     bytesRemaining -= numberOfBytesToRead;
 
     startAddress += numberOfBytesToRead / 2;
   }
 
+
   return (0); //Success
-#endif
+
 }
 
 //Set I2C Freq, in kHz
 //MLX90640_I2CFreqSet(1000) sets frequency to 1MHz
 void MLX90640_I2CFreqSet(int freq)
 {
-
-  // no idea -- don't use?
-
-  #if 0
-  //i2c.frequency(1000 * freq);
-  Wire.setClock((long)1000 * freq);
-  #endif
+  i2c_set_freq(freq);
 }
 
 //Write two bytes to a two byte address
 int MLX90640_I2CWrite(uint8_t _deviceAddress, unsigned int writeAddress, uint16_t data)
 {
 
-// ------------------- CUSTOM I2C CODE START --------------------------
   char write_data[4];
   write_data[0] = writeAddress >> 8;
   write_data[1] = writeAddress & 0xFF;
@@ -114,41 +91,14 @@ int MLX90640_I2CWrite(uint8_t _deviceAddress, unsigned int writeAddress, uint16_
 
   i2c_write(_deviceAddress, write_data, 4);
 
-  uint16_t dataCheck;
+  uint16_t dataCheck = 0;
   MLX90640_I2CRead(_deviceAddress, writeAddress, 1, &dataCheck);
   if (dataCheck != data)
   {
-    //Serial.println("The write request didn't stick");
     return -2;
   }
 
   return 0;
 
-  // ------------------- CUSTOM I2C CODE END --------------------------
-
-#if 0
-
-  Wire.beginTransmission((uint8_t)_deviceAddress);
-  Wire.write(writeAddress >> 8); //MSB
-  Wire.write(writeAddress & 0xFF); //LSB
-  Wire.write(data >> 8); //MSB
-  Wire.write(data & 0xFF); //LSB
-  if (Wire.endTransmission() != 0)
-  {
-    //Sensor did not ACK
-    Serial.println("Error: Sensor did not ack");
-    return (-1);
-  }
-
-  uint16_t dataCheck;
-  MLX90640_I2CRead(_deviceAddress, writeAddress, 1, &dataCheck);
-  if (dataCheck != data)
-  {
-    //Serial.println("The write request didn't stick");
-    return -2;
-  }
-
-  return (0); //Success
-#endif
 }
 

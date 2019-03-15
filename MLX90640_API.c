@@ -44,8 +44,8 @@ int MLX90640_DumpEE(uint8_t slaveAddr, uint16_t *eeData)
 int MLX90640_GetFrameData(uint8_t slaveAddr, uint16_t *frameData)
 {
     uint16_t dataReady = 1;
-    uint16_t controlRegister1;
-    uint16_t statusRegister;
+    uint16_t controlRegister1 = 0;
+    uint16_t statusRegister = 0;
     int error = 1;
     uint8_t cnt = 0;
     

@@ -1,5 +1,7 @@
 #include "printf.h"
 #include "uart.h"
+#include "timer.h"
+#include "math.h"
 #include "MLX90640_I2C_Driver.h"
 #include "MLX90640_API.h"
 
@@ -13,7 +15,57 @@ paramsMLX90640 mlx90640;
 
 void main(void) 
 {
-	MLX90640_I2CInit(); // problem --  undefined reference to `MLX90640_I2CInit'
+    uart_init();
+    MLX90640_I2CInit();
+
+    //MLX90640_I2CFreqSet(1000); 
+
+    int status;
+    //Get device parameters - We only have to do this once
+    uint16_t eeMLX90640[832];
+    status = MLX90640_DumpEE(MLX90640_address, eeMLX90640);
+    
+    if (status != 0) {
+        printf("Failed to load system parameters");
+    }
+
+    status = MLX90640_ExtractParameters(eeMLX90640, &mlx90640);
+    if (status != 0) {
+        printf("Parameter extraction failed, status: %d\n", status);
+    }
+
+    while (1) {
+        for (char x = 0; x < 2; x++) //Read both subpages
+        {
+            uint16_t mlx90640Frame[834];
+            int status = MLX90640_GetFrameData(MLX90640_address, mlx90640Frame);
+            if (status < 0)
+            {
+                printf("GetFrame Error: ");
+            }
+
+            float vdd = MLX90640_GetVdd(mlx90640Frame, &mlx90640);
+
+            float Ta = MLX90640_GetTa(mlx90640Frame, &mlx90640);
+
+            float tr = Ta - TA_SHIFT; //Reflected temperature based on the sensor ambient temperature
+            float emissivity = 0.95;
+
+            MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, mlx90640To);
+        }
+
+        for (int x = 0 ; x < 10 ; x++)
+        {
+
+            int temp = (int)(roundf(mlx90640To[x]));
+            printf("Pixel %d: %03dC\n", x, temp);
+            
+        }
+
+        timer_delay_us(1000);
+	}
+
+	//Once params are extracted, we can release eeMLX90640 array
 
 }
 
