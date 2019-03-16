@@ -4,6 +4,8 @@
 #include "math.h"
 #include "MLX90640_I2C_Driver.h"
 #include "MLX90640_API.h"
+#include "thermal_lib.h"
+#include "gl.h"
 
 
 const char MLX90640_address = 0x33; //Default 7-bit unshifted address of the MLX90640
@@ -13,8 +15,7 @@ const char MLX90640_address = 0x33; //Default 7-bit unshifted address of the MLX
 static float mlx90640To[768];
 paramsMLX90640 mlx90640;
 
-void main(void) 
-{
+void test_data_get(void) {
     MLX90640_I2CFreqSet(1000);
     uart_init();
     MLX90640_I2CInit();
@@ -66,9 +67,25 @@ void main(void)
             
         }
 
-	}
+    }
 
-	//Once params are extracted, we can release eeMLX90640 array
+    //Once params are extracted, we can release eeMLX90640 array
+}
 
+void test_thermal_color(void) {
+    thermal_init(0.0, 80.0);
+
+    float temp = 0.0;
+    color_t color = 0;
+
+    for (; temp <= 80.0; temp += 5.0) {
+        color = get_thermal_color(temp);
+        printf("Color: %x\n", color);
+    }    
+}
+
+void main(void) 
+{
+    test_thermal_color();
 }
 

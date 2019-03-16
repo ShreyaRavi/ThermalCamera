@@ -1,4 +1,5 @@
 #include "gl.h"
+#include "thermal_lib.h"
 
 unsigned char iron[119][3] = {
 {0, 0, 0},
@@ -123,10 +124,41 @@ unsigned char iron[119][3] = {
 };
 
 static const int scale_size = 119;
+static const float MIN_TEMP = 0;
+static const float MAX_TEMP = 80.0;
+
+static float low = 0;
+static float high = 0;
 
 color_t get_thermal_color(float temp) {
 	// 1. convert temp to normalized scale (integer) from 0 to 119
 	// 2. get color associated with normalized index --> return
+	int index = normalize(temp);
+	return gl_color(iron[index][0], iron[index][1], iron[index][2]);
+}
+
+void thermal_init(float set_low, float set_high) {
+	set_bounds(set_low, set_high);
+}
+
+void set_bounds(float set_low, float set_high) {
+
+	if (set_low > set_high) {
+		return;
+	}
+
+	set_high = (set_high < MIN_TEMP) ? (MIN_TEMP) : (set_high);
+	set_high = (set_high > MAX_TEMP) ? (MAX_TEMP) : (set_high);
+
+	set_low = (set_low < MIN_TEMP) ? (MIN_TEMP) : (set_low);
+	set_low = (set_low > MAX_TEMP) ? (MAX_TEMP) : (set_low);
+
+	low = set_low;
+	high = set_high;
+}
+
+int normalize(float temp) {
+	return (int)(roundf((((temp - low) / (high - low)) * (scale_size - 1.0))));
 }
 
 void display_thermal_img(float* temp_arr) {
