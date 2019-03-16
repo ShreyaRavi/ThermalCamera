@@ -66,7 +66,6 @@ void main(void)
             
         }
 
-        //timer_delay_us(20);
 	}
 
 	//Once params are extracted, we can release eeMLX90640 array
