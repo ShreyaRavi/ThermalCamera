@@ -214,6 +214,8 @@ void display_thermal_img(float* temp_arr) {
 			gl_draw_pixel(i, j, color);
 		}
 	}
+
+	gl_swap_buffer();
 	
 	//get_thermal_color()
 }
