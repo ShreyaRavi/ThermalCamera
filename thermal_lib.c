@@ -123,22 +123,63 @@ unsigned char iron[119][3] = {
 {255, 254, 239}
 };
 
-static const int scale_size = 119;
+int normalize(float temp, int scale_size);
+color_t get_thermal_color_rainbow(int normalized_temp);
+
 static const float MIN_TEMP = 0;
 static const float MAX_TEMP = 80.0;
 
 static float low = 0;
 static float high = 0;
+static unsigned char gradient = GRADIENT_IRON;
+
+static const int sensor_disp_width = 32;
+static const int sensor_disp_height = 24;
 
 color_t get_thermal_color(float temp) {
-	// 1. convert temp to normalized scale (integer) from 0 to 119
-	// 2. get color associated with normalized index --> return
-	int index = normalize(temp);
-	return gl_color(iron[index][0], iron[index][1], iron[index][2]);
+	switch(gradient) {
+		case GRADIENT_IRON:
+			;
+			int palette_size = 119;
+			int index = normalize(temp, palette_size);
+			return gl_color(iron[index][0], iron[index][1], iron[index][2]);
+		case GRADIENT_RAINBOW:
+			;
+			palette_size = 1021;
+			index = normalize(temp, palette_size);
+			return get_thermal_color_rainbow(index);
+	}
+	return -1;
 }
 
-void thermal_init(float set_low, float set_high) {
+color_t get_thermal_color_rainbow(int normalized_temp) {
+	int base = 0;
+	while (normalized_temp > 0) {
+		if (normalized_temp > 0) {
+			base++;
+		}
+		normalized_temp -= 255;
+	}
+
+	switch(base) {
+		case 0:
+			return gl_color(0, normalized_temp, 255);
+		case 1:
+			return gl_color(0, 255, 255 - normalized_temp);
+		case 2:
+			return gl_color(normalized_temp, 255, 0);
+		case 3:
+			return gl_color(255, 255 - normalized_temp, 0);
+	}
+
+	return -1;
+
+}
+
+void thermal_init(float set_low, float set_high, unsigned char gradient) {
+	set_gradient(gradient);
 	set_bounds(set_low, set_high);
+	gl_init(sensor_disp_width, sensor_disp_height, GL_DOUBLEBUFFER);
 }
 
 void set_bounds(float set_low, float set_high) {
@@ -157,11 +198,23 @@ void set_bounds(float set_low, float set_high) {
 	high = set_high;
 }
 
-int normalize(float temp) {
+int normalize(float temp, int scale_size) {
 	return (int)(roundf((((temp - low) / (high - low)) * (scale_size - 1.0))));
 }
 
+void set_gradient(unsigned char new_gradient) {
+	gradient = new_gradient;
+}
+
 void display_thermal_img(float* temp_arr) {
+	for (int i = 0; i < sensor_disp_width; i++) {
+		for (int j = 0; j < sensor_disp_height; j++) {
+			float temp = temp_arr[(i * sensor_disp_width) + j];
+			color_t color = get_thermal_color(temp);
+			gl_draw_pixel(i, j, color);
+		}
+	}
+	
 	//get_thermal_color()
 }
 

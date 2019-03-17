@@ -73,7 +73,7 @@ void test_data_get(void) {
 }
 
 void test_thermal_color(void) {
-    thermal_init(0.0, 80.0);
+    thermal_init(0.0, 80.0, GRADIENT_IRON);
 
     float temp = 0.0;
     color_t color = 0;
