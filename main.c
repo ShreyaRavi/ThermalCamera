@@ -16,6 +16,7 @@ static float mlx90640To[768];
 paramsMLX90640 mlx90640;
 
 void test_data_get(void) {
+    thermal_init(20.0f, 40.0f, GRADIENT_IRON);
     MLX90640_I2CFreqSet(1000);
     uart_init();
     MLX90640_I2CInit();
@@ -57,15 +58,16 @@ void test_data_get(void) {
             float emissivity = 0.95;
 
             MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, mlx90640To);
+            display_thermal_img(mlx90640To);
         }
 
-        for (int x = 0 ; x < 10 ; x++)
-        {
+        // for (int x = 0 ; x < 10 ; x++)
+        // {
 
-            int temp = (int)(roundf(mlx90640To[x]));
-            printf("Pixel %d: %03dC\n", x, temp);
+        //     int temp = (int)(roundf(mlx90640To[x]));
+        //     printf("Pixel %d: %03dC\n", x, temp);
             
-        }
+        // }
 
     }
 
@@ -86,6 +88,9 @@ void test_thermal_color(void) {
 
 void main(void) 
 {
+
+    test_data_get();
+
     test_thermal_color();
 }
 

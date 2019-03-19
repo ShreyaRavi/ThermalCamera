@@ -154,10 +154,8 @@ color_t get_thermal_color(float temp) {
 
 color_t get_thermal_color_rainbow(int normalized_temp) {
 	int base = 0;
-	while (normalized_temp > 0) {
-		if (normalized_temp > 0) {
-			base++;
-		}
+	while (normalized_temp > 255) {
+		base++;
 		normalized_temp -= 255;
 	}
 
@@ -199,6 +197,11 @@ void set_bounds(float set_low, float set_high) {
 }
 
 int normalize(float temp, int scale_size) {
+	if (temp < low) {
+		temp = low;
+	} else if (temp > high) {
+		temp = high;
+	}
 	return (int)(roundf((((temp - low) / (high - low)) * (scale_size - 1.0))));
 }
 
@@ -207,16 +210,15 @@ void set_gradient(unsigned char new_gradient) {
 }
 
 void display_thermal_img(float* temp_arr) {
-	for (int i = 0; i < sensor_disp_width; i++) {
-		for (int j = 0; j < sensor_disp_height; j++) {
-			float temp = temp_arr[(i * sensor_disp_width) + j];
+	for (int row = 0; row < sensor_disp_width; row++) { // row -- y value
+		for (int col = 0; col < sensor_disp_height; col++) { // col -- x value
+			float temp = temp_arr[(row * sensor_disp_width) + col];
 			color_t color = get_thermal_color(temp);
-			gl_draw_pixel(i, j, color);
+			gl_draw_pixel(col, row, color);
 		}
 	}
 
 	gl_swap_buffer();
 	
-	//get_thermal_color()
 }
 
