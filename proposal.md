@@ -35,3 +35,4 @@ The Wireless Thermal Camera is a handheld device that sends thermal data to a mo
   * https://learn.sparkfun.com/tutorials/qwiic-ir-array-mlx90640-hookup-guide/all
   * https://docs.zerynth.com/latest/official/board.zerynth.nodemcu_esp32/docs/index.html
   * Ashwin created and maintains a library for ESP32 communication that allows the user to use UART to communicate between the Raspberry Pis
+  * https://cdn.sparkfun.com/assets/3/1/c/6/f/MLX90640-Datasheet.pdf
