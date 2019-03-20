@@ -1,5 +1,6 @@
 #include "gl.h"
 #include "thermal_lib.h"
+#include "uart.h"
 
 unsigned char iron[119][3] = {
 {0, 0, 0},
@@ -218,7 +219,16 @@ void display_thermal_img(float* temp_arr) {
 		}
 	}
 
-	gl_swap_buffer();
-	
+	gl_swap_buffer();	
+}
+
+void transmit_thermal_img(float* temp_arr) {
+	for (int row = 0; row < sensor_disp_width; row++) { // row -- y value
+		for (int col = 0; col < sensor_disp_height; col++) { // col -- x value
+			float temp = temp_arr[(row * sensor_disp_width) + col];
+			color_t color = get_thermal_color(temp);
+			uart_putchar(color);
+		}
+	}
 }
 
