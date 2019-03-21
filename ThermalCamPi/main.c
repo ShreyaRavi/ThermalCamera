@@ -12,6 +12,7 @@ const char MLX90640_address = 0x33; //Default 7-bit unshifted address of the MLX
 
 #define TA_SHIFT 8 //Default shift for MLX90640 in open air
 
+static int test = 0;
 static float mlx90640To[768];
 paramsMLX90640 mlx90640;
 
@@ -123,6 +124,25 @@ void test_data_transmit(void) {
     //Once params are extracted, we can release eeMLX90640 array
 }
 
+void test_send_single_char(void) {
+
+    uart_init();
+
+    timer_delay(7);
+
+    while (1) {
+        uart_putchar(test);
+
+        test++;
+        if (test > 'z') {
+            test = 'a';
+        }
+
+        timer_delay_ms(1000);
+        uart_flush();
+    }
+    
+}
 
 void test_thermal_color(void) {
     thermal_init(0.0, 80.0, GRADIENT_IRON);
@@ -138,9 +158,9 @@ void test_thermal_color(void) {
 
 void main(void) 
 {
-
-    test_data_get();
-
-    test_thermal_color();
+    // test_data_get();
+    // test_data_transmit();
+    // test_thermal_color();
+    test_send_single_char();
 }
 
