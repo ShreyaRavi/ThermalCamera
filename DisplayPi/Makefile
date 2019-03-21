@@ -1,6 +1,6 @@
 NAME = main
 OBJECTS =
-MY_MODULES =
+MY_MODULES = save.o
 
 CFLAGS  = -I$(CS107E)/include -g -Wall -Wpointer-arith
 CFLAGS += -Og -std=c99 -ffreestanding
