@@ -194,7 +194,7 @@ color_t get_thermal_color_rainbow(int normalized_temp) {
 		normalized_temp -= 255;
 	}
 
-	switch(base) {
+	switch (base) {
 		case 0:
 			return gl_color(0, normalized_temp, 255);
 		case 1:
@@ -204,23 +204,36 @@ color_t get_thermal_color_rainbow(int normalized_temp) {
 		case 3:
 			return gl_color(255, 255 - normalized_temp, 0);
 	}
-
 	return -1;
-
 }
 
+/*
+ * Initializer for thermal library.
+ *
+ * @param set_low Low bound for temperature reading
+ * @param set_high Upper bound for temperature reading
+ * @param gradient Choice of gradient to use for image
+ */
 void thermal_init(float set_low, float set_high, unsigned char gradient) {
 	set_gradient(gradient);
 	set_bounds(set_low, set_high);
 	gl_init(sensor_disp_width, sensor_disp_height, GL_DOUBLEBUFFER);
 }
 
+/*
+ * Sets upper and lower bounds for temperature reading. 
+ * Accounts for out-of-range values.
+ * If the indicated set_low value is greater than set_high, no values are set.
+ *
+ * @param set_low Low bound for temperature reading
+ * @param set_high Upper bound for temperature reading
+ */
 void set_bounds(float set_low, float set_high) {
-
 	if (set_low > set_high) {
 		return;
 	}
 
+	// Bounds checking
 	set_high = (set_high < MIN_TEMP) ? (MIN_TEMP) : (set_high);
 	set_high = (set_high > MAX_TEMP) ? (MAX_TEMP) : (set_high);
 
@@ -231,6 +244,13 @@ void set_bounds(float set_low, float set_high) {
 	high = set_high;
 }
 
+/*
+ * Normalizes temperature data between a low and a high value,
+ * on an indicated scale size value.
+ *
+ * @param temp Temperature to normalize
+ * @param scale_size Size of scale (gradient) to normalize to
+ */
 int normalize(float temp, int scale_size) {
 	if (temp < low) {
 		temp = low;
@@ -240,10 +260,21 @@ int normalize(float temp, int scale_size) {
 	return (int)(roundf((((temp - low) / (high - low)) * (scale_size - 1.0))));
 }
 
+/*
+ * Sets the gradient to be used for pixel mapping.
+ *
+ * @param new_gradient Gradient to set
+ */
 void set_gradient(unsigned char new_gradient) {
 	gradient = new_gradient;
 }
 
+/*
+ * Displays a thermal image to the local frame buffer.
+ * To be used without wireless integration.
+ *
+ * @param temp_arr Pixel data to put in frame buffer
+ */
 void display_thermal_img(float* temp_arr) {
 	for (int row = 0; row < sensor_disp_width; row++) { // row -- y value
 		for (int col = 0; col < sensor_disp_height; col++) { // col -- x value
@@ -256,15 +287,28 @@ void display_thermal_img(float* temp_arr) {
 	gl_swap_buffer();	
 }
 
+/*
+ * Transmits a thermal image wirelessly through UART-WiFi bridge (ESP32).
+ * To be used with wireless integration.
+ * Transmits color value by color value (3 values per RGB pixel)
+ *
+ * @param temp_arr Pixel data to put in frame buffer
+ */
 void transmit_thermal_img(float* temp_arr) {
 	for (int row = 0; row < sensor_disp_width; row++) { // row -- y value
 		for (int col = 0; col < sensor_disp_height; col++) { // col -- x value
 			float temp = temp_arr[(row * sensor_disp_width) + col];
 			color_t color = get_thermal_color(temp);
+
+			// Blue pixel value
 			uart_putchar(color & 0xFF);
 			timer_delay_us(20);
+
+			// Green pixel value
 			uart_putchar((color >> 8) & 0xFF);
 			timer_delay_us(20);
+
+			// Red pixel value
 			uart_putchar((color >> 16) & 0xFF);
 			timer_delay_us(20);
 		}

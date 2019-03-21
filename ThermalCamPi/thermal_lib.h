@@ -12,6 +12,7 @@ void transmit_thermal_img(float* temp_arr);
 void display_thermal_img(float* temp_arr);
 void set_gradient(unsigned char gradient);
 
+// Color gradients supported
 enum color_gradient {
 	GRADIENT_IRON,
 	GRADIENT_RAINBOW
