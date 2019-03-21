@@ -43,8 +43,8 @@ void test_thermal_color(void) {
 
 void main(void) 
 {
-    // data_get();
-    data_transmit();
+    data_get();
+    // data_transmit();
     // test_thermal_color();
     // test_send_single_char();
 }
