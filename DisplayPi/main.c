@@ -5,6 +5,8 @@
 #include "gl.h"
 #include "malloc.h"
 #include "strings.h"
+#include "keyboard.h"
+#include "interrputs.h"
 
 static const int sensor_disp_width = 32;
 static const int sensor_disp_height = 24;
@@ -75,7 +77,11 @@ void test_get_string(void) {
 void main(void) 
 {
     uart_init();
+    keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
+    interrupts_global_enable();
+    keyboard_enable_interrputs();
     gl_init(sensor_disp_width, sensor_disp_height, GL_DOUBLEBUFFER);
+
     test_string = malloc(2000);
     num_cols = gl_get_width()/gl_get_char_width();
     num_rows = gl_get_height()/gl_get_char_height();
