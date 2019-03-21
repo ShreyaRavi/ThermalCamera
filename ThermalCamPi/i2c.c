@@ -86,12 +86,14 @@ void i2c_read(unsigned slave_address, char *data, int data_length) {
     // begin read
     i2c->control |= CONTROL_READ | CONTROL_START;
 
-    timer_delay_us(25);
+    //timer_delay_us(25);
+    timer_delay_us(500);
     // keep reading until transfer is complete
     while ((i2c->status & STATUS_FIFO_CAN_READ) &&
             (!(i2c->status & STATUS_TRANSFER_DONE) ||
              (data_index < data_length))) {
-        timer_delay_us(5);
+        //timer_delay_us(5);
+        timer_delay_us(40);
         data[data_index++] = i2c->data_fifo;
     }
 #if 0

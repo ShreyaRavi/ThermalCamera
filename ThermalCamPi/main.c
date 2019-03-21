@@ -12,7 +12,7 @@ const char MLX90640_address = 0x33; //Default 7-bit unshifted address of the MLX
 
 #define TA_SHIFT 8 //Default shift for MLX90640 in open air
 
-static int test = 0;
+static int test = 'a';
 static float mlx90640To[768];
 paramsMLX90640 mlx90640;
 
@@ -98,7 +98,8 @@ void test_data_transmit(void) {
         printf("Parameter extraction failed, status: %d\n", status);
     }
 
-    MLX90640_SetRefreshRate(MLX90640_address, 0x06); // 32 Hz -- 16 fps (Highest I can go i think) 
+    //MLX90640_SetRefreshRate(MLX90640_address, 0x06); // 32 Hz -- 16 fps (Highest I can go i think) 
+    MLX90640_SetRefreshRate(MLX90640_address, 0x02); // 2 Hz -- 1 fps
 
     while (1) {
         for (char x = 0; x < 2; x++) //Read both subpages
@@ -138,8 +139,10 @@ void test_send_single_char(void) {
             test = 'a';
         }
 
-        timer_delay_ms(1000);
-        uart_flush();
+        timer_delay_ms(100);
+
+        // timer_delay_ms(1000);
+        // uart_flush();
     }
     
 }
@@ -159,8 +162,8 @@ void test_thermal_color(void) {
 void main(void) 
 {
     // test_data_get();
-    // test_data_transmit();
+    test_data_transmit();
     // test_thermal_color();
-    test_send_single_char();
+    // test_send_single_char();
 }
 
