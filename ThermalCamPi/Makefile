@@ -1,6 +1,6 @@
 NAME = main
 OBJECTS =
-MY_MODULES = MLX90640_I2C_Driver.o MLX90640_API.o i2c.o thermal_lib.o
+MY_MODULES = MLX90640_I2C_Driver.o MLX90640_API.o i2c.o thermal_lib.o colorize.o
 
 CFLAGS  = -I$(CS107E)/include -g -Wall -Wpointer-arith
 CFLAGS += -Og -std=c99 -ffreestanding

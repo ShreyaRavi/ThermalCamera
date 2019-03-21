@@ -3,6 +3,16 @@
 #include "uart.h"
 #include "timer.h"
 
+/*
+ * Data structure mapping pixel data to colors.
+ * This color gradient is called "iron," and goes from
+ * blue to purple to red to yellow; it is the default
+ * gradient for this thermal camera.
+ *
+ * This lookup table is stored in memory for increased 
+ * computational efficiency, helping decrease image lag.
+ */
+
 unsigned char iron[119][3] = {
 {0, 0, 0},
 {0, 0, 36},
@@ -128,18 +138,34 @@ unsigned char iron[119][3] = {
 int normalize(float temp, int scale_size);
 color_t get_thermal_color_rainbow(int normalized_temp);
 
+// Maximum and minimum temperatures allowed by hardware
+// Measured in celsius
 static const float MIN_TEMP = 0;
 static const float MAX_TEMP = 80.0;
 
+// User-determined ranges for maximum and minimum temperatures to read
 static float low = 0;
 static float high = 0;
+
+// Default gradient used
 static unsigned char gradient = GRADIENT_IRON;
 
+// Hardware-determined dimensions of the frame buffer
 static const int sensor_disp_width = 32;
 static const int sensor_disp_height = 24;
 
+/*
+ * Retrieves the pixel data for a particular temperature.
+ * Normalizes the temperature on a range of possible colors depending 
+ * on the palette size, and returns the mapped color at that normalized index.
+ *
+ * Two palettes are supported: iron (blue to red to yellow), and rainbow.
+ *
+ * @param temp The temperature to map to a color
+ * @return The color of the temperature on the indicated range and gradient
+ */
 color_t get_thermal_color(float temp) {
-	switch(gradient) {
+	switch (gradient) {
 		case GRADIENT_IRON:
 			;
 			int palette_size = 119;
@@ -154,6 +180,13 @@ color_t get_thermal_color(float temp) {
 	return -1;
 }
 
+/*
+ * Calculates the color of an indicated temperature on the rainbow gradient.
+ * Function is called from the get_thermal_color() function.
+ *
+ * @param normalized_temp The normalized temperature to map to a color
+ * @return The color of the temperature on the indicated range and rainbow gradient
+ */
 color_t get_thermal_color_rainbow(int normalized_temp) {
 	int base = 0;
 	while (normalized_temp > 255) {
