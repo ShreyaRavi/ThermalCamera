@@ -5,6 +5,8 @@
 #include "gpio.h"
 #include "save.h"
 
+#define MAX_PICS 24
+
 
 // NOTE TO SELF -- HOW TO INTEGRATE EVERYTHING
 // 1. Keep current display state global/public
@@ -12,7 +14,7 @@
 // 3. After calculation, do switch statement on display state and call appropriate function
 
 int pics_saved = 0;
-color_t** pic_arr;
+color_t*[MAX_PICS] pic_arr;
 
 int curr_display_state = STREAM;
 
@@ -27,25 +29,25 @@ void save_init(void) {
 
     //Use pin 17 instead of default (pin 3) because that is used by thermal camera
 	keyboard_init_ext(GPIO_PIN17, KEYBOARD_DATA);
-    pic_arr = (color_t **)malloc(1);
+    //pic_arr = (color_t **)malloc(1);
 }
 
 void take_pic(void) {
 	int bytes = 4 * 32 * 24;
 	color_t* curr_pic = malloc(bytes);
 
-	int h = gl_get_height();
-	int w = gl_get_width();
+	int height = gl_get_height();
+	int width = gl_get_width();
 
-	for (int row = 0; row < h; row++) { // each row -- y
-		for (int col = 0; col < w; col++) { // each column -- x
+	for (int row = 0; row < height; row++) { // each row -- y
+		for (int col = 0; col < width; col++) { // each column -- x
 			color_t color = gl_read_pixel(col, row);
-			curr_pic[gl_get_width()*row + col] = color;
+			curr_pic[width*row + col] = color;
 		}
 	}
 
 	pics_saved++;
-	pic_arr = realloc((void *)pic_arr, pics_saved);
+	//pic_arr = realloc((void *)pic_arr, pics_saved);
 	pic_arr[pics_saved - 1] = curr_pic;
 	
 	// read pixel colors from image
@@ -56,9 +58,14 @@ void take_pic(void) {
 void disp_pic(void) {
 	gl_clear(GL_BLACK);
 	color_t* curr_pic = pic_arr[gallery_index];
-	for (int row = 0; row < gl_get_height(); row++) { // each row -- y
-		for (int col = 0; col < gl_get_width(); col++) { // each column -- x
-			color_t color = curr_pic[gl_get_width()*row + col];
+
+	int height = gl_get_height();
+	int width = gl_get_width();
+
+
+	for (int row = 0; row < height; row++) { // each row -- y
+		for (int col = 0; col < width; col++) { // each column -- x
+			color_t color = curr_pic[width*row + col];
 			gl_draw_pixel(col, row, color);
 		}
 	}
