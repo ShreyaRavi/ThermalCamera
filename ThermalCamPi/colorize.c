@@ -67,7 +67,7 @@ void data_get(void) {
 
         if (!rb_empty(rb_scancode)) {
             printf("uwu\n");
-            char c = keyboard_read_next_ext();
+            char c = keyboard_read_next_ext_custom();
             printf("%c\n", c);
 
             int junk = 0;

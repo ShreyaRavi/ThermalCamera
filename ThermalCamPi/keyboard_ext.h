@@ -136,5 +136,7 @@ unsigned char keyboard_read_scancode_ext(void);
  */
 void keyboard_use_interrupts(void);
 
+unsigned char keyboard_read_next_ext_custom(void);
+
 
 #endif
