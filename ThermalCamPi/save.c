@@ -40,7 +40,7 @@ void take_pic(void) {
 	for (int row = 0; row < h; row++) { // each row -- y
 		for (int col = 0; col < w; col++) { // each column -- x
 			color_t color = gl_read_pixel(col, row);
-			curr_pic[gl_get_height()*row + col] = color;
+			curr_pic[gl_get_width()*row + col] = color;
 		}
 	}
 
@@ -58,10 +58,11 @@ void disp_pic(void) {
 	color_t* curr_pic = pic_arr[gallery_index];
 	for (int row = 0; row < gl_get_height(); row++) { // each row -- y
 		for (int col = 0; col < gl_get_width(); col++) { // each column -- x
-			color_t color = curr_pic[gl_get_height()*row + col];
+			color_t color = curr_pic[gl_get_width()*row + col];
 			gl_draw_pixel(col, row, color);
 		}
 	}
+	gl_swap_buffer();
 }
 
 void disp_help_screen(void) {
