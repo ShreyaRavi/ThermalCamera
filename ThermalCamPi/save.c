@@ -14,9 +14,14 @@
 int pics_saved = 0;
 color_t** pic_arr;
 
+int curr_display_state = STREAM;
+
 int prev_display_state = STREAM;
-int display_state = STREAM;
 int gallery_index = 0;
+
+int get_disp_state(void) {
+	return curr_display_state;
+}
 
 void save_init(void) {
 
@@ -71,7 +76,7 @@ void disp_help_screen(void) {
 void interpret_user_keys(char key) {
 	// char key = keyboard_read_next_ext();
 
-	switch(display_state) {
+	switch(curr_display_state) {
 		case STREAM:
 			switch(key) {
 				case ' ':
@@ -79,11 +84,11 @@ void interpret_user_keys(char key) {
 					break;
 				case 'e':
 					if (pics_saved > 0) {
-						display_state = GALLERY;
+						curr_display_state = GALLERY;
 					}
 					break;
 				case 'h':
-					display_state = HELP;
+					curr_display_state = HELP;
 					prev_display_state = STREAM;
 					break;
 			}
@@ -103,10 +108,10 @@ void interpret_user_keys(char key) {
 					}
 					break;
 				case 'e':
-					display_state = STREAM;
+					curr_display_state = STREAM;
 					break;
 				case 'h':
-					display_state = HELP;
+					curr_display_state = HELP;
 					prev_display_state = GALLERY;
 					break;
 			}
@@ -114,7 +119,7 @@ void interpret_user_keys(char key) {
 		case HELP:
 			switch(key) {
 				case 'h':
-					display_state = prev_display_state;
+					curr_display_state = prev_display_state;
 					break;
 			}
 			break;

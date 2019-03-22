@@ -54,7 +54,7 @@ void data_get(void) {
                 printf("GetFrame Error: %d\n", status);
             }
 
-            float vdd = MLX90640_GetVdd(mlx90640Frame, &mlx90640);
+            MLX90640_GetVdd(mlx90640Frame, &mlx90640);
 
             float Ta = MLX90640_GetTa(mlx90640Frame, &mlx90640);
 
@@ -63,26 +63,33 @@ void data_get(void) {
 
             MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, mlx90640To);
         }
-        display_thermal_img(mlx90640To);
+
+        switch(get_disp_state()) {
+            case STREAM:
+                display_thermal_img(mlx90640To);
+                break;
+            case GALLERY:
+                disp_pic();
+                break;
+            case HELP:
+                break;
+        }
+        
 
         if (!rb_empty(rb_scancode)) {
-            printf("uwu\n");
             char c = keyboard_read_next_ext_custom();
             printf("%c\n", c);
 
-            int junk = 0;
-            while (!rb_empty(rb_scancode)) {
-                rb_dequeue(rb_scancode, &junk);
+            if (c == 'e' || 
+                c == 'l' || 
+                c == 'j' || 
+                c == ' ' || 
+                c == 'h') {
+                interpret_user_keys(c);
             }
+
         }
-        // char c = keyboard_read_next_ext();
-        // if (c == 'e' || 
-        //     c == 'l' || 
-        //     c == 'j' || 
-        //     c == ' ' || 
-        //     c == 'h') {
-        //     interpret_user_keys(c);
-        // }
+        
     }
     //Once params are extracted, we can release eeMLX90640 array
 }
@@ -128,7 +135,7 @@ void data_transmit(void) {
                 printf("GetFrame Error: %d\n", status);
             }
 
-            float vdd = MLX90640_GetVdd(mlx90640Frame, &mlx90640);
+            MLX90640_GetVdd(mlx90640Frame, &mlx90640);
             float Ta = MLX90640_GetTa(mlx90640Frame, &mlx90640);
             float tr = Ta - TA_SHIFT; //Reflected temperature based on the sensor ambient temperature
             float emissivity = 0.95;

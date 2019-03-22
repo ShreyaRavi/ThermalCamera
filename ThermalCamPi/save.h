@@ -7,11 +7,11 @@ enum DISP_STATE {
 	HELP
 };
 
-
 void save_init(void);
 void interpret_user_keys(char key);
 void disp_pic(void);
 void disp_help_screen(void);
+int get_disp_state(void);
 
 
 #endif
