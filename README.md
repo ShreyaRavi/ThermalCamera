@@ -5,8 +5,15 @@ Uses thermal camera to read temperature data from the environment and calculates
 The project also implements a photo gallery wherein you can take a picture and scroll through previously captured pictures.
 
 # Contributions
-<strong>Shreya</strong>: Created driver to communicate with MLX90640 thermal camera, integrated C++ API for camera, created photo gallery state machine <br>
-<strong>Alexa</strong>: Processed thermal camera data into associated colors, displayed image using graphics library, interfaced state machine with graphics
+<strong>Shreya</strong>:
+* Created I2C driver wrapper to communicate with MLX90640 thermal camera
+* Integrated C++ API for camera
+* Created photo gallery state machine
+
+<strong>Alexa</strong>: 
+* Processed thermal camera data into associated colors
+* Displayed image using graphics library
+* Interfaced state machine with graphics
 
 ## How to Set Up Project
 1. Connect a SparkFun MLX90640 (Qwicc) IR Array to Raspberry Pi. Use the standard pins for I2C communication on the RPi.
