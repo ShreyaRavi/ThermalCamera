@@ -40,7 +40,7 @@ void take_pic(void) {
 	}
 
 	pics_saved++;
-	pic_arr = realloc((void *)pics_saved, bytes);
+	pic_arr = realloc((void *)pic_arr, pics_saved);
 	pic_arr[pics_saved - 1] = curr_pic;
 	
 	// read pixel colors from image
