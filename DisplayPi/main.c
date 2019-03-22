@@ -6,7 +6,7 @@
 #include "malloc.h"
 #include "strings.h"
 #include "keyboard.h"
-#include "interrputs.h"
+#include "interrupts.h"
 
 static const int sensor_disp_width = 32;
 static const int sensor_disp_height = 24;
@@ -79,7 +79,7 @@ void main(void)
     uart_init();
     keyboard_init(KEYBOARD_CLOCK, KEYBOARD_DATA);
     interrupts_global_enable();
-    keyboard_enable_interrputs();
+    keyboard_use_interrupts();
     gl_init(sensor_disp_width, sensor_disp_height, GL_DOUBLEBUFFER);
 
     test_string = malloc(2000);

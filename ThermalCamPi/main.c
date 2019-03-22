@@ -4,7 +4,9 @@
 #include "gl.h"
 #include "math.h"
 #include "colorize.h"
+#include "keyboard_ext.h"
 #include "thermal_lib.h"
+#include "save.h"
 
 static int test = 'a';
 
@@ -41,9 +43,22 @@ void test_thermal_color(void) {
     }    
 }
 
+void test_get_key(void) {
+
+    while (1) {
+        // data_get();
+        char c = keyboard_read_next_ext();
+        printf("%c",c);
+    }
+}
+
 void main(void) 
 {
+    uart_init();
+    save_init();
+    // thermal_init(20.0, 40.0, GRADIENT_IRON);
     data_get();
+    // test_get_key();
     // data_transmit();
     // test_thermal_color();
     // test_send_single_char();

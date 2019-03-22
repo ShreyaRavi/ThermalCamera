@@ -7,11 +7,11 @@ enum DISP_STATE {
 	HELP
 };
 
-int display_state = STREAM;
 
 void save_init(void);
-void interpret_user_keys(void);
+void interpret_user_keys(char key);
 void disp_pic(void);
 void disp_help_screen(void);
+
 
 #endif

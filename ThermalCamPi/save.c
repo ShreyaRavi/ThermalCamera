@@ -1,10 +1,9 @@
-#include "keyboard.h"
+#include "keyboard_ext.h"
 #include "interrupts.h"
 #include "gl.h"
 #include "malloc.h"
 #include "gpio.h"
 #include "save.h"
-#include "printf.h"
 
 
 // NOTE TO SELF -- HOW TO INTEGRATE EVERYTHING
@@ -16,14 +15,13 @@ int pics_saved = 0;
 color_t** pic_arr;
 
 int prev_display_state = STREAM;
+int display_state = STREAM;
 int gallery_index = 0;
 
 void save_init(void) {
-    interrupts_global_enable();
 
     //Use pin 17 instead of default (pin 3) because that is used by thermal camera
-	keyboard_init(GPIO_PIN17, KEYBOARD_DATA);
-    keyboard_use_interrupts();
+	keyboard_init_ext(GPIO_PIN17, KEYBOARD_DATA);
     pic_arr = (color_t **)malloc(1);
 }
 
@@ -70,15 +68,14 @@ void disp_help_screen(void) {
 	gl_draw_string(0, gl_get_char_height() * 4, "[j] - previous picture:", GL_WHITE);
 }
 
-void interpret_user_keys(void) {
-	char key = keyboard_read_next();
+void interpret_user_keys(char key) {
+	// char key = keyboard_read_next_ext();
 
 	switch(display_state) {
 		case STREAM:
 			switch(key) {
 				case ' ':
 					take_pic();
-					printf("picture taken \n");
 					break;
 				case 'e':
 					if (pics_saved > 0) {

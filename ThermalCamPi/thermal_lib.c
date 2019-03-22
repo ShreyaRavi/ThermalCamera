@@ -302,15 +302,15 @@ void transmit_thermal_img(float* temp_arr) {
 
 			// Blue pixel value
 			uart_putchar(color & 0xFF);
-			timer_delay_us(20);
+			// timer_delay_us(20);
 
 			// Green pixel value
 			uart_putchar((color >> 8) & 0xFF);
-			timer_delay_us(20);
+			// timer_delay_us(20);
 
 			// Red pixel value
 			uart_putchar((color >> 16) & 0xFF);
-			timer_delay_us(20);
+			// timer_delay_us(20);
 		}
 	}
 }

@@ -2,10 +2,12 @@
 #include "uart.h"
 #include "timer.h"
 #include "math.h"
+#include "save.h"
 #include "MLX90640_I2C_Driver.h"
 #include "MLX90640_API.h"
 #include "thermal_lib.h"
 #include "gl.h"
+#include "keyboard_ext.h"
 
 const char MLX90640_address = 0x33; //Default 7-bit unshifted address of the MLX90640
 
@@ -60,8 +62,23 @@ void data_get(void) {
             float emissivity = 0.95;
 
             MLX90640_CalculateTo(mlx90640Frame, &mlx90640, emissivity, tr, mlx90640To);
-            display_thermal_img(mlx90640To);
         }
+        display_thermal_img(mlx90640To);
+
+        if (!rb_empty(rb)) {
+            char c = keyboard_read_next_ext();
+            printf("%c\n", c);
+        } else {
+            printf("wut\n");
+        }
+        // char c = keyboard_read_next_ext();
+        // if (c == 'e' || 
+        //     c == 'l' || 
+        //     c == 'j' || 
+        //     c == ' ' || 
+        //     c == 'h') {
+        //     interpret_user_keys(c);
+        // }
     }
     //Once params are extracted, we can release eeMLX90640 array
 }
