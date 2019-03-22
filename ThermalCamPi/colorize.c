@@ -83,8 +83,7 @@ void data_get(void) {
             if (c == 'e' || 
                 c == 'l' || 
                 c == 'j' || 
-                c == ' ' || 
-                c == 'h') {
+                c == ' ') {
                 interpret_user_keys(c);
             }
 
