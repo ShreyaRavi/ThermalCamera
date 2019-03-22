@@ -13,7 +13,7 @@ The project also implements a photo gallery wherein you can take a picture and s
 <strong>Alexa</strong>: 
 * Processed thermal camera data into associated colors
 * Displayed image using graphics library
-* Interfaced state machine with graphics
+* Interfaced photo gallery state machine with graphics
 
 ## How to Set Up Project
 1. Connect a SparkFun MLX90640 (Qwicc) IR Array to Raspberry Pi. Use the standard pins for I2C communication on the RPi.
