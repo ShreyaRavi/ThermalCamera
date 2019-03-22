@@ -65,14 +65,14 @@ void data_get(void) {
         }
         display_thermal_img(mlx90640To);
 
-        if (!rb_empty(rb)) {
+        if (!rb_empty(rb_scancode)) {
             printf("uwu\n");
             char c = keyboard_read_next_ext();
             printf("%c\n", c);
 
             int junk = 0;
-            while (!rb_empty(rb)) {
-                rb_dequeue(rb, &junk);
+            while (!rb_empty(rb_scancode)) {
+                rb_dequeue(rb_scancode, &junk);
             }
         }
         // char c = keyboard_read_next_ext();

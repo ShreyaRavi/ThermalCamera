@@ -1,6 +1,6 @@
 #include "gpio.h"
 #include "gpioextra.h"
-#include "keyboard.h"
+#include "keyboard_ext.h"
 #include "ps2.h"
 #include "timer.h"
 #include "printf.h"
@@ -109,7 +109,7 @@ void wait_for_falling_clock_edge(void) {
     while (gpio_read(CLK) == 1) {}
 }
 
-void keyboard_init(unsigned int clock_gpio, unsigned int data_gpio) 
+void keyboard_init_ext(unsigned int clock_gpio, unsigned int data_gpio) 
 {
     CLK = clock_gpio;
     gpio_set_input(CLK); 
@@ -127,7 +127,7 @@ void keyboard_init(unsigned int clock_gpio, unsigned int data_gpio)
 
 }
 
-unsigned char keyboard_read_scancode(void) 
+unsigned char keyboard_read_scancode_ext(void) 
 {
     int scancode = 0;
     // wait until a scancode is successfully dequeued
@@ -136,17 +136,17 @@ unsigned char keyboard_read_scancode(void)
     return scancode;
 }
 
-key_action_t keyboard_read_sequence(void)
+key_action_t keyboard_read_sequence_ext(void)
 {
     key_action_t action;
-    unsigned char code = keyboard_read_scancode();
+    unsigned char code = keyboard_read_scancode_ext();
     if (code == PS2_CODE_EXTENDED) { // ignore the extended code
-        code = keyboard_read_scancode();
+        code = keyboard_read_scancode_ext();
     }
 
     // if the code was a break code, read a new scancode -- break code = on release
     if (code == PS2_CODE_RELEASE) {
-        action.keycode = keyboard_read_scancode();
+        action.keycode = keyboard_read_scancode_ext();
         action.what = KEY_RELEASE;
     } else { // if the code was not a break code, then it was the scancode -- on press
         action.keycode = code;
@@ -156,11 +156,11 @@ key_action_t keyboard_read_sequence(void)
     return action;
 }
 
-key_event_t keyboard_read_event(void) 
+key_event_t keyboard_read_event_ext(void) 
 {    
     // create an event, set action
     key_event_t event;
-    key_action_t action = keyboard_read_sequence();
+    key_action_t action = keyboard_read_sequence_ext();
     event.action = action;
 
     // get key from ps2_keys lookup table
@@ -195,12 +195,12 @@ key_event_t keyboard_read_event(void)
 }
 
 
-unsigned char keyboard_read_next(void) 
+unsigned char keyboard_read_next_ext(void) 
 {
     // keep reading events until it is a press that is not a modifier
     key_event_t event;
     do {
-        event = keyboard_read_event();
+        event = keyboard_read_event_ext();
     } while (event.action.what == KEY_RELEASE ||
      event.key.ch == PS2_KEY_SHIFT ||
       event.key.ch == PS2_KEY_CAPS_LOCK ||
