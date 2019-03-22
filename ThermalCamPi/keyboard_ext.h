@@ -45,7 +45,7 @@ typedef struct {
 #define KEYBOARD_CLOCK GPIO_PIN3
 #define KEYBOARD_DATA GPIO_PIN4
 
-static rb_t *rb;
+rb_t *rb;
 
 /*
  * `keyboard_init`: Required initialization for keyboard
