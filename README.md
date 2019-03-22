@@ -14,5 +14,5 @@ The project also implements a photo gallery wherein you can take a picture and s
 
 
 ### References
-- fds
+- [MLX90640 Data Sheet from Melexsis](https://www.melexis.com/-/media/files/documents/datasheets/mlx90640-datasheet-melexis.pdf)
 - dsfd
