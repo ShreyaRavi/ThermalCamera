@@ -5,12 +5,12 @@
  * Authored by Anna
  * Bug fix by Chris Gregg and Tom Welch
  *
+ * Modifications in March 2019 by Shreya Ravi (sravi2@stanford.edu), CS 107E
  */
 
 #include "gpio.h"
 #include "i2c.h"
 #include "timer.h"
-#include "printf.h"
 
 
 struct I2C { // I2C registers
@@ -58,16 +58,25 @@ struct I2C { // I2C registers
 
 static volatile struct I2C *i2c = (struct I2C *) BSC_BASE;
 
-// #define SHORT_DELAY 50
 #define NORM_DELAY 500
 
+/*
+* Initializes I2C pins and enables I2C communcation.
+* 
+* Same as given library implementation.
+*/
 void i2c_init(void) {
     gpio_set_function(SDA, GPIO_FUNC_ALT0);
     gpio_set_function(SCL, GPIO_FUNC_ALT0);
     i2c->control = CONTROL_ENABLE;
-    printf("clk div: %x\n", i2c->clock_divider);
 }
 
+/*
+* Completes I2C read from slave address byte by byte and stores in char array
+* 
+* Same as given library implementation except delays are shortened as much as possible to
+* speed up data transmission.
+*/
 void i2c_read(unsigned slave_address, char *data, int data_length) {
     // clear out the FIFO
     i2c->control |= CONTROL_CLEAR_FIFO;
@@ -87,13 +96,11 @@ void i2c_read(unsigned slave_address, char *data, int data_length) {
     i2c->control |= CONTROL_READ | CONTROL_START;
 
     timer_delay_us(25);
-    //timer_delay_us(500);
     // keep reading until transfer is complete
     while ((i2c->status & STATUS_FIFO_CAN_READ) &&
             (!(i2c->status & STATUS_TRANSFER_DONE) ||
              (data_index < data_length))) {
         timer_delay_us(5);
-        //timer_delay_us(40);
         data[data_index++] = i2c->data_fifo;
     }
 #if 0
@@ -110,10 +117,18 @@ void i2c_read(unsigned slave_address, char *data, int data_length) {
 #endif
 }
 
+/*
+* Sets I2C frequency by setting associated hardware register
+*/ 
 void i2c_set_freq(int freq_khz) {
     i2c->clock_divider = (150000 / freq_khz);
 }
 
+/*
+* Completes I2C write from slave address byte by byte and from given char array
+* 
+* Same as given library implementation.
+*/
 void i2c_write(unsigned slave_address, char *data, int data_length) {
     // clear out the FIFO
     i2c->control |= CONTROL_CLEAR_FIFO;
@@ -147,18 +162,5 @@ void i2c_write(unsigned slave_address, char *data, int data_length) {
     }
 
     // wait until the FIFO's contents are emptied by the slave
-    while (!(i2c->status & STATUS_FIFO_EMPTY))
-        ;
-#if 0
-    // inform end user of potential responses
-    if (i2c->status & STATUS_ERROR_SLAVE_ACK) {
-        printf("NACK received.\n");
-    }
-    if (i2c->status & STATUS_TIMEOUT) {
-        printf("Clock timed out.\n");
-    }
-    if (data_index < data_length) {
-        printf("Data transfer incomplete.\n");
-    }
-#endif
+    while (!(i2c->status & STATUS_FIFO_EMPTY));
 }

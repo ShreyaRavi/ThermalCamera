@@ -66,7 +66,7 @@ void keyboard_init_ext(unsigned int clock_gpio, unsigned int data_gpio);
 /*
  * `keyboard_read_next`: Top level keyboard interface.
  *
- * This function reads (blocking) the next key typed on the keyboard.
+ * This function reads (blocking) the next key released on the keyboard.
  * The character returned reflects the current keyboard modifier settings
  * for shift and caps lock.
  *
@@ -135,8 +135,6 @@ unsigned char keyboard_read_scancode_ext(void);
  * also globally enable interrupts at system level.
  */
 void keyboard_use_interrupts(void);
-
-unsigned char keyboard_read_next_ext_custom(void);
 
 
 #endif

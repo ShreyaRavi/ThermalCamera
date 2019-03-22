@@ -22,13 +22,18 @@
 #include "i2c.h"
 #include "timer.h"
 
+/*
+ * Initialize I2C module for Pi
+ */
 void MLX90640_I2CInit(void)
 {
   i2c_init();
 }
 
-//Read a number of words from startAddress. Store into Data array.
-//Returns 0 if successful, -1 if error
+/*
+ * Read a number of words from startAddress. Store into Data array.
+ * Returns 0 if successful, -1 if error
+ */
 int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned int nWordsRead, uint16_t *data)
 {
   char write_start_addr[2];
@@ -52,8 +57,14 @@ int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned
       numberOfBytesToRead = I2C_BUFFER_LENGTH;
     }
 
+    // writes each byte to char array with MSByte first, LSByte second
     i2c_read(_deviceAddress, &(((char*) data)[dataSpot]), numberOfBytesToRead);
 
+    // ARM architecture is little endian,
+    // so when interpreting this as a 16-bit value (uint_16_t),
+    // the LSByte is interpreted as the MSByte and vice versa
+
+    // To fix this, flip every pair of bytes in the char array
     for (uint16_t x = 0; x < numberOfBytesToRead; x += 2) {
       char temp = ((char *) data)[dataSpot + x];
       ((char *) data)[dataSpot + x] = ((char *) data)[dataSpot + x + 1];
@@ -72,25 +83,33 @@ int MLX90640_I2CRead(uint8_t _deviceAddress, unsigned int startAddress, unsigned
 
 }
 
-//Set I2C Freq, in kHz
-//MLX90640_I2CFreqSet(1000) sets frequency to 1MHz
+/*
+ * Set I2C Freq, in kHz
+ * MLX90640_I2CFreqSet(1000) sets frequency to 1MHz
+ */
 void MLX90640_I2CFreqSet(int freq)
 {
   i2c_set_freq(freq);
 }
 
-//Write two bytes to a two byte address
+/*
+ * Write two bytes to a two byte address
+ */
 int MLX90640_I2CWrite(uint8_t _deviceAddress, unsigned int writeAddress, uint16_t data)
 {
 
+  // Write MSByte first, LSByte second
   char write_data[4];
   write_data[0] = writeAddress >> 8;
   write_data[1] = writeAddress & 0xFF;
+
   write_data[2] = data >> 8;
   write_data[3] = data & 0xFF;
 
   i2c_write(_deviceAddress, write_data, 4);
 
+  // check that data was written correctly by reading it 
+  // and checking if what is read is the same as what is expected
   uint16_t dataCheck = 0;
   MLX90640_I2CRead(_deviceAddress, writeAddress, 1, &dataCheck);
   if (dataCheck != data)

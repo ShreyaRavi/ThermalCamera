@@ -201,38 +201,6 @@ unsigned char keyboard_read_next_ext(void)
     key_event_t event;
     do {
         event = keyboard_read_event_ext();
-    } while (event.action.what == KEY_RELEASE ||
-     event.key.ch == PS2_KEY_SHIFT ||
-      event.key.ch == PS2_KEY_CAPS_LOCK ||
-      event.key.ch == PS2_KEY_ALT ||
-      event.key.ch == PS2_KEY_CTRL ||
-      event.key.ch == PS2_KEY_NUM_LOCK ||
-      event.key.ch == PS2_KEY_SCROLL_LOCK);
-
-
-    if ((event.modifiers & KEYBOARD_MOD_SHIFT) != 0) { // SHIFT is enabled
-        // SHIFT only affects printable characters (<= 0x7f)
-        if (event.key.ch <= 0x7f && event.key.other_ch != 0) {
-            return event.key.other_ch;
-        }
-    }
-
-    if ((event.modifiers & KEYBOARD_MOD_CAPS_LOCK) != 0) { // CAPS LOCK is enabled
-        // only affects letters
-        if (event.key.ch >= 'a' && event.key.ch <= 'z') {
-            return event.key.other_ch;
-        }
-    }
-
-    return event.key.ch;
-}
-
-unsigned char keyboard_read_next_ext_custom(void) 
-{
-    // keep reading events until it is a release that is not a modifier
-    key_event_t event;
-    do {
-        event = keyboard_read_event_ext();
     } while (event.action.what == KEY_PRESS ||
      event.key.ch == PS2_KEY_SHIFT ||
       event.key.ch == PS2_KEY_CAPS_LOCK ||
